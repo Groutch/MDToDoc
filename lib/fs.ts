@@ -32,7 +32,6 @@ export async function readTree(rel: string = ""): Promise<TreeNode[]> {
       nodes.push({ name: e.name, path: p, type: "file" });
     }
   }
-  // sort: dirs first, then files; both alpha
   nodes.sort((a, b) => {
     if (a.type !== b.type) return a.type === "dir" ? -1 : 1;
     return a.name.localeCompare(b.name, "fr", { numeric: true, sensitivity: "base" });
@@ -46,9 +45,11 @@ export async function readMarkdownFile(relPath: string): Promise<string> {
   return content;
 }
 
-export function normalizeSlugToPath(slug?: string[]): string {
+// Retourne null si on ne veut pas traiter la slug (ex: favicon.ico)
+export function normalizeSlugToPath(slug?: string[]): string | null {
   if (!slug || slug.length === 0) return "index.md";
-  let p = slug.join("/");
+  const p = slug.join("/");
+  if (p === "favicon.ico") return null; // très important
   if (p.endsWith(".md")) return p;
   return p + ".md";
 }
