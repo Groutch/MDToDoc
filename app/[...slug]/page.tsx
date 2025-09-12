@@ -3,13 +3,23 @@ import { mdToHtmlAndToc } from "@/lib/markdown";
 import DocTree from "@/components/DocTree";
 import MarkdownView from "@/components/MarkdownView";
 import TOC from "@/components/TOC";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function DocPage({ params }: { params: { slug?: string[] } }) {
   await ensureDocsRoot();
+
   const relPath = normalizeSlugToPath(params.slug);
-  const md = await readMarkdownFile(relPath);
+  if (!relPath) return notFound(); // ex: favicon.ico
+
+  let md: string;
+  try {
+    md = await readMarkdownFile(relPath);
+  } catch {
+    return notFound();
+  }
+
   const { html, toc } = mdToHtmlAndToc(md);
   const tree = await readTree();
 
