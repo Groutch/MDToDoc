@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark theme base */
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  @apply bg-neutral-950 text-neutral-100;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  scroll-margin-top: 6rem;
+}
+
+.toc a {
+  @apply hover:underline;
+}
+
+/* Basic code styling */
+.markdown-body pre code {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

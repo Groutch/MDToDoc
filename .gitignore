@@ -1,0 +1,27 @@
+# DO NOT ADD YOUR IDE SETTINGS HERE
+# (eg. .idea or .vscode)
+
+###> general ###
+*.local
+/.*.cache
+/VERSION
+###< general ###
+
+###> env ###
+/.env.local
+###< env ###
+
+###> yarn/npm/next ###
+.yarn
+/yarn.lock
+/yarn-error.log
+/public/mockServiceWorker.js
+/public/bundles/
+/public/build/
+/node_modules/
+/.next/
+###< yarn/npm/next ###
+
+###> docs ###
+/docs/
+###< docs ###
