@@ -10,18 +10,20 @@ export type TocItem = {
 export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
   const toc: TocItem[] = [];
   const renderer = new marked.Renderer();
+  const slugger = new (marked as any).Slugger();
 
-  renderer.heading = (text, level, raw, slugger) => {
+  // heading(text, level) — API simplifiée dans marked v12
+  renderer.heading = (text: string, level: number) => {
+    const raw = stripHtml(String(text));
     const id = slugger.slug(raw);
-    toc.push({ id, text: String(text), level });
+    toc.push({ id, text: raw, level });
     return `<h${level} id="${id}">${text}</h${level}>`;
   };
 
-  // Code highlighting + mermaid tagging
   marked.setOptions({
+    headerIds: false, // on gère nous-mêmes les ids
     highlight(code, lang) {
       if (lang && lang.toLowerCase() === "mermaid") {
-        // Return a pre/code block that our client component will transform via mermaid
         return code;
       }
       try {
@@ -33,7 +35,7 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
     }
   });
 
-  renderer.code = (code, lang) => {
+  renderer.code = (code: string, lang?: string) => {
     if (lang && lang.toLowerCase() === "mermaid") {
       return `<pre class="mermaid">${code}</pre>`;
     }
@@ -43,4 +45,8 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
 
   const html = marked.parse(md, { renderer }) as string;
   return { html, toc };
+}
+
+function stripHtml(s: string) {
+  return s.replace(/<[^>]*>/g, "");
 }
