@@ -39,17 +39,19 @@ export default function AdminPage() {
   // Upload
   async function onUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const formEl = e.currentTarget; // <-- capture avant await
+    const fd = new FormData(formEl);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     if (!res.ok) alert("Upload failed");
     await refresh();
-    e.currentTarget.reset();
+    formEl?.reset(); // <-- safe reset
   }
 
   // Mkdir
   async function onMkdir(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
+    const formEl = e.currentTarget; // <-- capture avant await
+    const data = new FormData(formEl);
     const dir = (data.get("dir") as string) || "";
     if (!dir) return;
     const res = await fetch("/api/mkdir", {
@@ -59,7 +61,7 @@ export default function AdminPage() {
     });
     if (!res.ok) alert("mkdir failed");
     await refresh();
-    e.currentTarget.reset();
+    formEl?.reset(); // <-- safe reset
   }
 
   // Delete
