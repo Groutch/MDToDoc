@@ -338,20 +338,24 @@ function Droppable({
   className?: string;
   children?: React.ReactNode;
 }) {
-  const { setNodeRef, isOver } = useDroppable({ id: id ?? undefined });
-  const active = isOver ? "border-white/30 bg-white/5" : "border-neutral-800";
+  // fake id if none, to disable dnd + disable droppable
+  const droppableId = (id ?? "__noop") as any;
+  const { setNodeRef, isOver } = useDroppable({
+    id: droppableId,
+    disabled: !id,
+  });
+
+  const active =
+    id && isOver ? "border-white/30 bg-white/5" : "border-neutral-800";
+
   return (
-    <div
-      ref={setNodeRef}
-      className={`rounded-lg border ${active} ${className}`}
-    >
-      {label ? (
-        <div className="px-3 py-2 text-sm text-neutral-300">{label}</div>
-      ) : null}
+    <div ref={setNodeRef} className={`rounded-lg border ${active} ${className}`}>
+      {label ? <div className="px-3 py-2 text-sm text-neutral-300">{label}</div> : null}
       {children}
     </div>
   );
 }
+
 
 function Draggable({ id, children }: { id: string; children: React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id });
