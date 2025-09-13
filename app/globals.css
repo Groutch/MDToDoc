@@ -1,31 +1,71 @@
-/* app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root { color-scheme: dark; }
+html, body { @apply bg-neutral-950 text-neutral-100; }
 
-html, body {
-  @apply bg-neutral-950 text-neutral-100;
+/* Séparation visuelle légère de la sidebar */
+@media (min-width: 1024px) {
+  aside > .space-y-1 { border-right: 1px solid #262626; padding-right: 0.75rem; }
 }
 
-/* Prose = typographie lisible et hiérarchisée */
-.prose {
-  @apply leading-relaxed;
+/* ===== Preset lecture type Medium ===== */
+.article-medium {
+  /* base typographie */
+  @apply prose prose-invert prose-xl;
+  /* largeur confortable et centrée */
+  max-width: 70ch;
+  margin-left: auto;
+  margin-right: auto;
+
+  /* lisibilité */
+  line-height: 1.9;
+  text-wrap: pretty;
 }
-.prose h1 { @apply text-3xl md:text-4xl font-extrabold tracking-tight mt-6 mb-4; }
-.prose h2 { @apply text-2xl md:text-3xl font-bold mt-8 mb-3; }
-.prose h3 { @apply text-xl md:text-2xl font-semibold mt-6 mb-2; }
-.prose p  { @apply text-neutral-300; }
 
-.prose blockquote { @apply border-l-4 border-neutral-700 pl-4 text-neutral-300; }
-.prose hr { @apply border-neutral-800; }
+/* Hiérarchie claire */
+.article-medium h1 { @apply text-4xl md:text-5xl font-extrabold tracking-tight mt-6 mb-5 text-white; }
+.article-medium h2 { @apply text-3xl font-bold mt-10 mb-4 text-white; }
+.article-medium h3 { @apply text-2xl font-semibold mt-8 mb-3 text-white; }
 
-/* Codes */
-.prose code { @apply rounded px-1.5 py-0.5 bg-neutral-900/80 border border-neutral-800; }
-.prose pre  { @apply rounded-xl border border-neutral-800 p-4 bg-neutral-900 overflow-x-auto; }
-.prose pre code { @apply bg-transparent border-0 p-0; }
+/* Paragraphes aérés */
+.article-medium p { @apply text-neutral-300 my-4; }
+
+/* Liens sobres */
+.article-medium a { @apply text-blue-300 hover:underline; }
+
+/* Listes */
+.article-medium ul, .article-medium ol { @apply my-4; }
+.article-medium li { @apply my-1; }
+
+/* Citations */
+.article-medium blockquote { 
+  @apply my-6 italic border-l-4 pl-4;
+  border-left-color: #374151;
+  color: #d1d5db;
+}
+
+/* Séparateurs */
+.article-medium hr { @apply my-8 border-neutral-800; }
+
+/* Code inline + blocs */
+.article-medium code { 
+  @apply rounded px-1.5 py-0.5 bg-neutral-900/80 border border-neutral-800 text-neutral-200;
+}
+.article-medium pre  { 
+  @apply rounded-xl border border-neutral-800 p-4 bg-neutral-900 overflow-x-auto my-6;
+}
+.article-medium pre code { @apply bg-transparent border-0 p-0; }
+
+/* Images et tables */
+.article-medium img { @apply rounded-lg border border-neutral-800; }
+.article-medium table { @apply w-full text-sm; }
+.article-medium thead { @apply border-b border-neutral-700; }
+.article-medium tbody tr { @apply border-b border-neutral-800; }
+
+/* Ancrage TOC (offset header sticky) */
+.prose h1, .prose h2, .prose h3, .prose h4 { scroll-margin-top: 6rem; }
 
 /* TOC */
 .toc a { @apply hover:underline; }
-.prose h1, .prose h2, .prose h3, .prose h4 { scroll-margin-top: 6rem; }

@@ -11,9 +11,6 @@ export default async function HomePage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <aside className="lg:col-span-1">
-        <div className="mb-4 text-sm text-neutral-400">
-          Les dossiers sont triés en premier, puis les fichiers.
-        </div>
         <DocTree tree={tree} />
       </aside>
       <section className="lg:col-span-3">
