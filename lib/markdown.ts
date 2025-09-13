@@ -7,7 +7,6 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
   const toc: TocItem[] = [];
   const renderer = new marked.Renderer();
 
-  // mini slugify + disambiguation
   const used = new Map<string, number>();
   function slugify(raw: string) {
     const base = raw
@@ -28,26 +27,28 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
     return `<h${level} id="${id}">${text}</h${level}>`;
   };
 
-  marked.setOptions({
-    highlight(code, lang) {
-      if (lang && lang.toLowerCase() === "mermaid") return code;
-      try {
-        return lang
-          ? hljs.highlight(code, { language: lang }).value
-          : hljs.highlightAuto(code).value;
-      } catch {
-        return code;
-      }
-    },
-  });
+  renderer.code = (
+    code: string,
+    infostring?: string | undefined,
+    _escaped?: boolean | undefined
+  ) => {
+    const lang = (infostring || "").toLowerCase();
 
-  renderer.code = (code: string, lang?: string) => {
-    if (lang && lang.toLowerCase() === "mermaid") {
-      return `<pre class="mermaid">${code}</pre>`;
+    if (lang === "mermaid") {
+      return `<pre class="mermaid">${escapeHtml(code)}</pre>`;
     }
-    const className = lang ? `language-${lang}` : "";
-    // added .hljs to enable highlight.js theme
-    return `<pre class="hljs"><code class="${className} hljs">${code}</code></pre>`;
+
+    try {
+      if (lang) {
+        const html = hljs.highlight(code, { language: lang }).value;
+        return `<pre class="hljs"><code class="language-${lang} hljs">${html}</code></pre>`;
+      } else {
+        const html = hljs.highlightAuto(code).value;
+        return `<pre class="hljs"><code class="hljs">${html}</code></pre>`;
+      }
+    } catch {
+      return `<pre class="hljs"><code class="hljs">${escapeHtml(code)}</code></pre>`;
+    }
   };
 
   const html = marked.parse(md, { renderer }) as string;
@@ -56,4 +57,8 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
 
 function stripHtml(s: string) {
   return s.replace(/<[^>]*>/g, "");
+}
+
+function escapeHtml(s: string) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
