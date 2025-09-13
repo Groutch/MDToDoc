@@ -26,6 +26,7 @@ export default function AdminPage() {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const sensors = useSensors(
     // avoids accidental drag
@@ -34,10 +35,22 @@ export default function AdminPage() {
 
   async function refresh() {
     setLoading(true);
-    const res = await fetch("/api/tree");
-    const j = await res.json();
-    setTree(j.tree || []);
-    setLoading(false);
+    setError(null);
+    try {
+      const res = await fetch("/api/tree", {
+        cache: "no-store",
+        headers: { accept: "application/json" },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const j = await res.json();
+      setTree(Array.isArray(j.tree) ? j.tree : []);
+    } catch (e: any) {
+      console.error("Failed to load tree:", e?.message ?? e);
+      setTree([]);
+      setError("Impossible de charger l’arborescence (API /api/tree indisponible).");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -135,6 +148,8 @@ export default function AdminPage() {
         <div className="rounded-xl border border-neutral-800 p-3">
           {loading ? (
             <div className="text-neutral-400 text-sm">Chargement…</div>
+          ) : error ? (
+            <div className="text-red-400 text-sm">{error}</div>
           ) : (
             <DndContext
               sensors={sensors}
