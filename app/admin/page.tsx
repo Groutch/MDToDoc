@@ -8,6 +8,9 @@ import {
   useDroppable,
   useDraggable,
   rectIntersection,
+  PointerSensor,
+  useSensor,
+  useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -24,6 +27,13 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
+  // --- Sensors: évite les faux drag (clic simple) ---
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 }, // il faut bouger de 8px pour activer le drag
+    })
+  );
+
   async function refresh() {
     setLoading(true);
     const res = await fetch("/api/tree");
@@ -39,18 +49,18 @@ export default function AdminPage() {
   // Upload
   async function onUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formEl = e.currentTarget; // <-- capture avant await
+    const formEl = e.currentTarget; // capture avant await
     const fd = new FormData(formEl);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     if (!res.ok) alert("Upload failed");
     await refresh();
-    formEl?.reset(); // <-- safe reset
+    formEl?.reset();
   }
 
   // Mkdir
   async function onMkdir(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formEl = e.currentTarget; // <-- capture avant await
+    const formEl = e.currentTarget; // capture avant await
     const data = new FormData(formEl);
     const dir = (data.get("dir") as string) || "";
     if (!dir) return;
@@ -61,7 +71,7 @@ export default function AdminPage() {
     });
     if (!res.ok) alert("mkdir failed");
     await refresh();
-    formEl?.reset(); // <-- safe reset
+    formEl?.reset();
   }
 
   // Delete
@@ -78,10 +88,18 @@ export default function AdminPage() {
 
   const flatted = useMemo(() => flattenTree(tree), [tree]);
 
-  // DnD handlers
   function handleDragStart(ev: any) {
     setActiveId(ev.active.id);
   }
+
+  function isDescendantPath(parent: string, maybeChildDir: string) {
+    // parent: "a/b", maybeChildDir: "a/b/c" -> true
+    // protège contre move dans soi-même ou un descendant
+    if (!parent) return false;
+    const prefix = parent.endsWith("/") ? parent : parent + "/";
+    return maybeChildDir.startsWith(prefix);
+  }
+
   async function handleDragEnd(ev: DragEndEvent) {
     const { over, active } = ev;
     setActiveId(null);
@@ -98,6 +116,10 @@ export default function AdminPage() {
       const overNode = flatted.get(overId);
       if (!overNode || overNode.type !== "dir") return;
     }
+
+    // Garde-fous : pas de move si on dépose sur soi-même ou dans son descendant
+    if (toDir === "" ? from === "" : from === toDir) return; // même cible
+    if (isDescendantPath(from, toDir)) return; // move d'un dossier dans son descendant
 
     const res = await fetch("/api/move", {
       method: "POST",
@@ -124,6 +146,7 @@ export default function AdminPage() {
             <div className="text-neutral-400 text-sm">Chargement…</div>
           ) : (
             <DndContext
+              sensors={sensors}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               collisionDetection={rectIntersection}

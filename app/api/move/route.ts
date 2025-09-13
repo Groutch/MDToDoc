@@ -15,6 +15,14 @@ export async function POST(req: Request) {
   const srcAbs = path.join(DOCS_ROOT, from);
   const baseName = path.basename(from);
   const dstAbs = path.join(DOCS_ROOT, toDir, baseName);
+
+  // Garde-fous: pas de move sur soi-même ou dans son descendant
+  const normFrom = from.replace(/\\/g, "/");
+  const normToDir = String(toDir).replace(/\\/g, "/");
+  if (normFrom === normToDir || (normToDir && normToDir.startsWith(normFrom + "/"))) {
+    return NextResponse.json({ error: "Invalid move (self/descendant)" }, { status: 400 });
+  }
+
   try {
     await fs.mkdir(path.dirname(dstAbs), { recursive: true });
     await fs.rename(srcAbs, dstAbs);
