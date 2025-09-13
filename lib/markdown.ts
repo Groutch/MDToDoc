@@ -29,7 +29,6 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
   };
 
   marked.setOptions({
-    headerIds: false,
     highlight(code, lang) {
       if (lang && lang.toLowerCase() === "mermaid") return code;
       try {
