@@ -6,15 +6,28 @@ export default function MarkdownView({ html }: { html: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !ref.current) return;
+    if (typeof window === "undefined") return;
+
     let cancelled = false;
+
     (async () => {
       try {
         const mermaidMod = await import("mermaid");
-        const mermaid = mermaidMod.default ?? (mermaidMod as any);
-        mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "loose" });
+        const mermaid: any = (mermaidMod as any).default ?? (mermaidMod as any);
+
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "dark",
+          securityLevel: "loose",
+        });
+
         const root = ref.current;
-        const blocks = Array.from(root.querySelectorAll<HTMLElement>("pre.mermaid"));
+        if (!root) return; // re-check for TS
+
+        const blocks = Array.from(
+          root.querySelectorAll<HTMLElement>("pre.mermaid")
+        );
+
         for (const el of blocks) {
           if (cancelled) break;
           const code = el.textContent ?? "";
