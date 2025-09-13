@@ -27,11 +27,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  // --- Sensors: évite les faux drag (clic simple) ---
+  // Évite les faux drag (il faut bouger de 8px)
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 }, // il faut bouger de 8px pour activer le drag
-    })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
   async function refresh() {
@@ -49,7 +47,7 @@ export default function AdminPage() {
   // Upload
   async function onUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formEl = e.currentTarget; // capture avant await
+    const formEl = e.currentTarget;
     const fd = new FormData(formEl);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
     if (!res.ok) alert("Upload failed");
@@ -60,7 +58,7 @@ export default function AdminPage() {
   // Mkdir
   async function onMkdir(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formEl = e.currentTarget; // capture avant await
+    const formEl = e.currentTarget;
     const data = new FormData(formEl);
     const dir = (data.get("dir") as string) || "";
     if (!dir) return;
@@ -93,8 +91,6 @@ export default function AdminPage() {
   }
 
   function isDescendantPath(parent: string, maybeChildDir: string) {
-    // parent: "a/b", maybeChildDir: "a/b/c" -> true
-    // protège contre move dans soi-même ou un descendant
     if (!parent) return false;
     const prefix = parent.endsWith("/") ? parent : parent + "/";
     return maybeChildDir.startsWith(prefix);
@@ -107,19 +103,17 @@ export default function AdminPage() {
 
     const from = String(active.id);
     const overId = String(over.id);
-
-    // "root" = déposer à la racine
     const toDir = overId === "root" ? "" : overId;
 
-    // On ne dépose que SUR un dossier (ou root)
+    // On ne dépose que sur un dossier (ou root)
     if (overId !== "root") {
       const overNode = flatted.get(overId);
       if (!overNode || overNode.type !== "dir") return;
     }
 
-    // Garde-fous : pas de move si on dépose sur soi-même ou dans son descendant
-    if (toDir === "" ? from === "" : from === toDir) return; // même cible
-    if (isDescendantPath(from, toDir)) return; // move d'un dossier dans son descendant
+    // Garde-fous : pas de move sur soi-même / dans son descendant
+    if (toDir === "" ? from === "" : from === toDir) return;
+    if (isDescendantPath(from, toDir)) return;
 
     const res = await fetch("/api/move", {
       method: "POST",
@@ -138,9 +132,6 @@ export default function AdminPage() {
       <section className="lg:col-span-1">
         <h1 className="text-xl font-semibold mb-4">Admin — Arborescence</h1>
 
-        {/* Zone droppable racine */}
-        <Droppable id="root" label="Racine (/docs)" className="mb-3" />
-
         <div className="rounded-xl border border-neutral-800 p-3">
           {loading ? (
             <div className="text-neutral-400 text-sm">Chargement…</div>
@@ -151,12 +142,20 @@ export default function AdminPage() {
               onDragEnd={handleDragEnd}
               collisionDetection={rectIntersection}
             >
+              {/* RACINE — maintenant dans le DndContext */}
+              <Droppable
+                id="root"
+                label="Racine (/docs)"
+                className="mb-3 p-2 border-dashed"
+              />
+
               <TreeView
                 nodes={tree}
                 open={open}
                 setOpen={setOpen}
                 onDelete={onDelete}
               />
+
               <DragOverlay>
                 {activeId ? (
                   <div className="px-2 py-1 rounded bg-white/10">{activeId}</div>
