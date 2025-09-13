@@ -7,7 +7,7 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
   const toc: TocItem[] = [];
   const renderer = new marked.Renderer();
 
-  // mini slugify + dédup
+  // mini slugify + disambiguation
   const used = new Map<string, number>();
   function slugify(raw: string) {
     const base = raw
@@ -29,7 +29,7 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
   };
 
   marked.setOptions({
-    headerIds: false, // on gère nous-mêmes
+    headerIds: false,
     highlight(code, lang) {
       if (lang && lang.toLowerCase() === "mermaid") return code;
       try {
@@ -47,7 +47,7 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
       return `<pre class="mermaid">${code}</pre>`;
     }
     const className = lang ? `language-${lang}` : "";
-    // Ajout de .hljs pour activer le thème highlight.js
+    // added .hljs to enable highlight.js theme
     return `<pre class="hljs"><code class="${className} hljs">${code}</code></pre>`;
   };
 

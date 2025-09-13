@@ -16,20 +16,9 @@ export default async function HomePage() {
       <section className="lg:col-span-3">
         <h1 className="text-2xl font-semibold mb-4">Bienvenue 👋</h1>
         <p className="text-neutral-300 mb-4">
-          Place tes fichiers <code>/docs</code> ici. Commence par{" "}
+          Voici la doc <span className="font-semibold">OFFICIELLE</span> de l'équipe Alpha. Tu peux commencer par{" "}
           <Link className="underline" href="/index">index.md</Link>.
         </p>
-        <div className="rounded-xl border border-neutral-800 p-4 text-sm text-neutral-400">
-          Exemple d&rsquo;arborescence :
-          <pre className="mt-2">
-{`/docs
-  ├─ index.md
-  └─ guide/
-     ├─ intro.md
-     └─ chart.md (avec \`\`\`mermaid)
-`}
-          </pre>
-        </div>
       </section>
     </div>
   );

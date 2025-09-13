@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   }
 
   const res = NextResponse.json({ ok: true });
-  // Cookie trivial (en prod: signer / expirer / secure)
+  // simple cookie, pas de JWT
   res.cookies.set("admin-session", expected, {
     httpOnly: true,
     sameSite: "lax",

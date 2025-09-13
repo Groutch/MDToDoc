@@ -11,7 +11,7 @@ export default function TOC({ toc }: { toc: TocItem[] }) {
     const handler = () => {
       let current: string | null = null;
       const headings = toc.map(t => document.getElementById(t.id)).filter(Boolean) as HTMLElement[];
-      const scrollY = window.scrollY + 120; // offset for sticky header
+      const scrollY = window.scrollY + 120; // offset sticky header
       for (const h of headings) {
         if (h.offsetTop <= scrollY) current = h.id;
         else break;

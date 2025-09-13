@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const baseName = path.basename(from);
   const dstAbs = path.join(DOCS_ROOT, toDir, baseName);
 
-  // Garde-fous: pas de move sur soi-même ou dans son descendant
+  // No move on self, no move into own descendant
   const normFrom = from.replace(/\\/g, "/");
   const normToDir = String(toDir).replace(/\\/g, "/");
   if (normFrom === normToDir || (normToDir && normToDir.startsWith(normFrom + "/"))) {

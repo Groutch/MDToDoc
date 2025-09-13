@@ -6,7 +6,6 @@ import type { TreeNode } from "@/lib/fs";
 
 type Props = {
   tree: TreeNode[];
-  /** ex: "guide/truc/index.md" ; si non fourni, rien n'est surligné */
   activePath?: string;
 };
 

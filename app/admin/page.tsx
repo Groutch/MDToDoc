@@ -27,8 +27,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  // Évite les faux drag (il faut bouger de 8px)
   const sensors = useSensors(
+    // avoids accidental drag
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
@@ -105,13 +105,13 @@ export default function AdminPage() {
     const overId = String(over.id);
     const toDir = overId === "root" ? "" : overId;
 
-    // On ne dépose que sur un dossier (ou root)
+    // drop only on dirs or root
     if (overId !== "root") {
       const overNode = flatted.get(overId);
       if (!overNode || overNode.type !== "dir") return;
     }
 
-    // Garde-fous : pas de move sur soi-même / dans son descendant
+    // no move on self, no move into own descendant
     if (toDir === "" ? from === "" : from === toDir) return;
     if (isDescendantPath(from, toDir)) return;
 
@@ -142,7 +142,6 @@ export default function AdminPage() {
               onDragEnd={handleDragEnd}
               collisionDetection={rectIntersection}
             >
-              {/* RACINE — maintenant dans le DndContext */}
               <Droppable
                 id="root"
                 label="Racine (/docs)"

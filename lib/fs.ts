@@ -45,11 +45,10 @@ export async function readMarkdownFile(relPath: string): Promise<string> {
   return content;
 }
 
-// Retourne null si on ne veut pas traiter la slug (ex: favicon.ico)
 export function normalizeSlugToPath(slug?: string[]): string | null {
   if (!slug || slug.length === 0) return "index.md";
   const p = slug.join("/");
-  if (p === "favicon.ico") return null; // très important
+  if (p === "favicon.ico") return null; // avoid favicon requests
   if (p.endsWith(".md")) return p;
   return p + ".md";
 }

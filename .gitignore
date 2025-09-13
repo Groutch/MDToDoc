@@ -4,7 +4,6 @@
 ###> general ###
 *.local
 /.*.cache
-/VERSION
 ###< general ###
 
 ###> env ###
