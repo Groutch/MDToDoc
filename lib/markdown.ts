@@ -1,23 +1,19 @@
 import { marked } from "marked";
 import hljs from "highlight.js";
 
-export type TocItem = {
-  id: string;
-  text: string;
-  level: number;
-};
+export type TocItem = { id: string; text: string; level: number };
 
 export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
   const toc: TocItem[] = [];
   const renderer = new marked.Renderer();
 
-  // mini slugify + déduplication locale (h2 identiques => -1, -2, ...)
+  // mini slugify + dédup
   const used = new Map<string, number>();
   function slugify(raw: string) {
     const base = raw
       .toLowerCase()
-      .replace(/<[^>]*>/g, "")        // retire le HTML éventuel
-      .replace(/[^\w\s-]/g, "")       // garde lettres/chiffres/underscore/espace/tiret
+      .replace(/<[^>]*>/g, "")
+      .replace(/[^\w\s-]/g, "")
       .trim()
       .replace(/\s+/g, "-");
     const n = used.get(base) ?? 0;
@@ -33,7 +29,7 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
   };
 
   marked.setOptions({
-    headerIds: false, // on gère nous-mêmes les ids
+    headerIds: false, // on gère nous-mêmes
     highlight(code, lang) {
       if (lang && lang.toLowerCase() === "mermaid") return code;
       try {
@@ -46,13 +42,13 @@ export function mdToHtmlAndToc(md: string): { html: string; toc: TocItem[] } {
     },
   });
 
-  // Support mermaid explicite
   renderer.code = (code: string, lang?: string) => {
     if (lang && lang.toLowerCase() === "mermaid") {
       return `<pre class="mermaid">${code}</pre>`;
     }
     const className = lang ? `language-${lang}` : "";
-    return `<pre><code class="${className}">${code}</code></pre>`;
+    // Ajout de .hljs pour activer le thème highlight.js
+    return `<pre class="hljs"><code class="${className} hljs">${code}</code></pre>`;
   };
 
   const html = marked.parse(md, { renderer }) as string;

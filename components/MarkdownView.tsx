@@ -61,8 +61,7 @@ export default function MarkdownView({ html }: { html: string }) {
   return (
     <div
       ref={ref}
-      className="prose prose-invert max-w-none prose-pre:rounded-xl prose-pre:border prose-pre:border-neutral-800"
-      // Le HTML vient du parseur Markdown
+      className="prose prose-invert prose-lg max-w-none prose-pre:rounded-xl prose-pre:border prose-pre:border-neutral-800"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

@@ -1,9 +1,10 @@
 import "./globals.css";
+import "highlight.js/styles/github-dark.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Docs Markdown",
-  description: "Visualisation de fichiers Markdown avec Mermaid",
+  title: "Alpha Docs",
+  description: "Documentation interne Alpha",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
