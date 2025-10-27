@@ -22,5 +22,5 @@
 ###< yarn/npm/next ###
 
 ###> docs ###
-/docs/
+/docs/*
 ###< docs ###

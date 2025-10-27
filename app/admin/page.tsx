@@ -29,7 +29,6 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
 
   const sensors = useSensors(
-    // avoids accidental drag: 8px
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
