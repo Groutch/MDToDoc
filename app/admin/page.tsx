@@ -29,7 +29,7 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
 
   const sensors = useSensors(
-    // avoids accidental drag
+    // avoids accidental drag: 8px
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
@@ -202,7 +202,7 @@ export default function AdminPage() {
             </button>
           </form>
           <p className="text-xs text-neutral-500 mt-2">
-            Astuce : pas d’extension « .md » ? On l’ajoute automatiquement.
+            Astuce : si pas d'extension, l'extension <code>.md</code> sera ajoutée
           </p>
         </div>
 
@@ -220,15 +220,6 @@ export default function AdminPage() {
               Créer
             </button>
           </form>
-        </div>
-
-        <div className="rounded-xl border border-neutral-800 p-4">
-          <h2 className="font-semibold mb-2">Notes</h2>
-          <ul className="list-disc ml-5 text-sm text-neutral-400 space-y-1">
-            <li>Glisse/dépose un fichier ou dossier sur un dossier pour le déplacer.</li>
-            <li>Glisse/dépose sur la zone “Racine” pour remonter à /docs.</li>
-            <li>Suppression récursive des dossiers, attention ⚠️</li>
-          </ul>
         </div>
       </section>
     </div>

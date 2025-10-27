@@ -5,7 +5,7 @@ export const DOCS_ROOT = path.join(process.cwd(), "docs");
 
 export type TreeNode = {
   name: string;
-  path: string; // relative from /docs
+  path: string;
   type: "file" | "dir";
   children?: TreeNode[];
 };
@@ -23,7 +23,7 @@ export async function readTree(rel: string = ""): Promise<TreeNode[]> {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const nodes: TreeNode[] = [];
   for (const e of entries) {
-    if (e.name.startsWith(".")) continue; // skip dotfiles
+    if (e.name.startsWith(".")) continue;
     const p = path.join(rel, e.name);
     if (e.isDirectory()) {
       const children = await readTree(p);
@@ -48,7 +48,7 @@ export async function readMarkdownFile(relPath: string): Promise<string> {
 export function normalizeSlugToPath(slug?: string[]): string | null {
   if (!slug || slug.length === 0) return "index.md";
   const p = slug.join("/");
-  if (p === "favicon.ico") return null; // avoid favicon requests
+  if (p === "favicon.ico") return null;
   if (p.endsWith(".md")) return p;
   return p + ".md";
 }
